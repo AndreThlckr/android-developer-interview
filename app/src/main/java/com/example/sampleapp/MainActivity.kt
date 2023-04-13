@@ -17,6 +17,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,8 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sampleapp.ui.theme.Dimens
 import com.example.sampleapp.ui.theme.SampleAppTheme
+import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +44,23 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    viewModel: MainViewModel = koinViewModel()
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    MainScreen(
+        state = state,
+        onQueryChange = viewModel::notifyQueryChanged,
+        onSearch = viewModel::loadWordData
+    )
+}
+
+@Composable
+fun MainScreen(
+    state: MainState,
+    onQueryChange: (String) -> Unit,
+    onSearch: () -> Unit
+) {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -67,8 +87,8 @@ fun MainScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedTextField(
-                    value = "",
-                    onValueChange = { /* TODO */ },
+                    value = state.query,
+                    onValueChange = onQueryChange,
                     textStyle = TextStyle(fontSize = 14.sp),
                     label = { Text("Enter word") },
                     singleLine = true,
@@ -78,7 +98,7 @@ fun MainScreen() {
                         .height(58.dp)
                 )
                 Button(
-                    onClick = { /*TODO*/ },
+                    onClick = onSearch,
                     modifier = Modifier
                         .height(intrinsicSize = IntrinsicSize.Max)
                         .padding(top = Dimens.paddingSmall)
