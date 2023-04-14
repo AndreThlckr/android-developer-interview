@@ -3,10 +3,13 @@ package com.example.sampleapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,7 +85,9 @@ fun MainScreen(
         }
     ) { contentPadding ->
         Column(
-            modifier = Modifier.padding(contentPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(contentPadding)
         ) {
             Row(
                 modifier = Modifier
@@ -111,14 +117,47 @@ fun MainScreen(
                 }
             }
 
-            AnimatedContent(targetState = state.data) { data ->
-                if (data != null) {
-                    WordDataBox(data = data)
+            AnimatedContent(
+                targetState = state,
+                modifier = Modifier.weight(1F)
+            ) { state ->
+                when {
+                    state.data != null -> WordDataBox(data = state.data)
+                    state.error == null -> EmptyMessage()
+                    else -> ErrorMessage(error = state.error)
                 }
             }
         }
     }
+}
 
+@Composable
+fun ColumnScope.EmptyMessage() {
+    InfoMessage(message = stringResource(R.string.empty_list_message))
+}
+
+@Composable
+fun ColumnScope.ErrorMessage(
+    @StringRes error: Int
+) {
+    InfoMessage(message = stringResource(error))
+}
+
+@Composable
+fun ColumnScope.InfoMessage(
+    message: String
+) {
+    Box(
+        modifier = Modifier.weight(1F),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = message,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+        )
+    }
 }
 
 @Preview(showBackground = true)

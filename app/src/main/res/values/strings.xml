@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">SampleApp</string>
+    <string name="word_not_found_message">Sorry, but we couldn\'t find this word in the dictionary.</string>
+    <string name="network_error_message">Something went wrong! Check your connection and try again.</string>
+    <string name="generic_error_message">A wild ERROR appeared! \n\n Sadly, you can\'t throw your Poké Ball at this one.</string>
+    <string name="empty_list_message">Choose a word to see it\'s definition</string>
 </resources>
