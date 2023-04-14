@@ -3,8 +3,10 @@ package com.example.sampleapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +19,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.sampleapp.ui.theme.Dimens
 import com.example.sampleapp.ui.theme.SampleAppTheme
+import com.example.sampleapp.ui.widget.WordDataBox
 import org.koin.androidx.compose.koinViewModel
 
 class MainActivity : ComponentActivity() {
@@ -55,6 +57,7 @@ fun MainScreen(
     )
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun MainScreen(
     state: MainState,
@@ -77,12 +80,13 @@ fun MainScreen(
             }
         }
     ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
+        Column(
+            modifier = Modifier.padding(contentPadding)
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(Dimens.paddingLarge)
-                    .align(Alignment.TopStart),
+                    .padding(Dimens.paddingLarge),
                 horizontalArrangement = Arrangement.spacedBy(Dimens.paddingSmall),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -106,8 +110,15 @@ fun MainScreen(
                     Text(text = "Search")
                 }
             }
+
+            AnimatedContent(targetState = state.data) { data ->
+                if (data != null) {
+                    WordDataBox(data = data)
+                }
+            }
         }
     }
+
 }
 
 @Preview(showBackground = true)
